@@ -23,7 +23,7 @@ void main() {
       if (start[CompilationUnit] cu := tree) {
         loc l = cu@\loc.top;
         l.extension = "java";
-        newLoc = |project://recaf-data/test-generated/generated/<l.file>|;
+        newLoc = |project://recaf-data-runtime/test-generated/generated/<l.file>|;
         newCU = recaffeinate(cu);
         writeFile(newLoc, newCU);
         return newCU;

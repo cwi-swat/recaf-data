@@ -2,14 +2,10 @@ package nl.cwi.md.semantics.oominheritance.test;
 
 import static org.junit.Assert.assertEquals;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Test;
 
-import nl.cwi.md.Cell;
 import nl.cwi.md.semantics.alg.Closure;
 import nl.cwi.md.semantics.oo.ast.Formal;
 import nl.cwi.md.semantics.oominheritance.impl.BaseMInheritanceImpl;
@@ -24,14 +20,11 @@ public class OOMInheritanceTest {
 
 		String thisFoo();
 
-		static A New() {
-			Cell<A> self = new Cell<>();
-			A proxy = A.New(self);
-			self.setValue(proxy);
-			return proxy;
+		static A New(Object... initArgs) {
+			return A.New(null, initArgs);
 		}
 
-		static A New(Cell<? extends A> self) {
+		static A New(A self, Object... initArgs) {
 			BaseMInheritanceImpl<A> alg = new BaseMInheritanceImpl<A>();
 			Class<?>[] parentIfaces = new Class<?>[0];
 			Object[] parents = new Object[parentIfaces.length];
@@ -41,11 +34,11 @@ public class OOMInheritanceTest {
 					return "I am A";
 				}
 			}), alg.Method("bar", String.class, new Formal[0], new Closure() {
-				public Object apply(A self, Map<Class<?>, Object> parents) {
+				public Object apply(A self) {
 					return "bar";
 				}
 			}), alg.Method("thisFoo", String.class, new Formal[0], new Closure() {
-				public Object apply(A self, Map<Class<?>, Object> parents) {
+				public Object apply(A self) {
 					return self.foo();
 				}
 			})));
@@ -58,22 +51,19 @@ public class OOMInheritanceTest {
 
 		String b();
 
-		static B New() {
-			Cell<B> self = new Cell<>();
-			B proxy = B.New(self);
-			self.setValue(proxy);
-			return proxy;
+		static B New(Object... initArgs) {
+			return B.New(null, initArgs);
 		}
 
-		static B New(Cell<? extends B> self) {
+		static B New(B self, Object... initArgs) {
 			BaseMInheritanceImpl<B> alg = new BaseMInheritanceImpl<B>();
 			Class<?>[] parentIfaces = new Class<?>[] { A.class };
 			B current = alg.Interface(B.class, parentIfaces, self, alg.Body(alg.Method("foo", String.class, new Formal[0], new Closure() {
-				public Object apply(B self, Map<Class<?>, Object> parents) {
+				public Object apply(B self, A super$0) {
 					return "I am B";
 				}
 			}), alg.Method("b", String.class, new Formal[0], new Closure() {
-				public Object apply(B self, Map<Class<?>, Object> parents) {
+				public Object apply(B self, A super$0) {
 					return "b";
 				}
 			})));
@@ -87,22 +77,19 @@ public class OOMInheritanceTest {
 
 		String c();
 
-		static C New() {
-			Cell<C> self = new Cell<>();
-			C proxy = C.New(self);
-			self.setValue(proxy);
-			return proxy;
+		static C New(Object... initArgs) {
+			return C.New(null, initArgs);
 		}
 
-		static C New(Cell<? extends C> self) {
+		static C New(C self, Object... initArgs) {
 			BaseMInheritanceImpl<C> alg = new BaseMInheritanceImpl<C>();
 			Class<?>[] parentIfaces = new Class<?>[] { A.class };
 			C current = alg.Interface(C.class, parentIfaces, self, alg.Body(alg.Method("foo", String.class, new Formal[0], new Closure() {
-				public Object apply(C self, Map<Class<?>, Object> parents) {
+				public Object apply(C self, A super$0) {
 					return "I am C";
 				}
 			}), alg.Method("c", String.class, new Formal[0], new Closure() {
-				public Object apply(C self, Map<Class<?>, Object> parents) {
+				public Object apply(C self, A super$0) {
 					return "c";
 				}
 			})));
@@ -116,24 +103,21 @@ public class OOMInheritanceTest {
 
 		String parentFoo();
 
-		static D New() {
-			Cell<D> self = new Cell<>();
-			D proxy = D.New(self);
-			self.setValue(proxy);
-			return proxy;
+		static D New(Object... initArgs) {
+			return D.New(null, initArgs);
 		}
 
-		static D New(Cell<? extends D> self) {
+		static D New(D self, Object... initArgs) {
 			BaseMInheritanceImpl<D> alg = new BaseMInheritanceImpl<D>();
 			Class<?>[] parentIfaces = new Class<?>[] { B.class, C.class };
 			D current = alg.Interface(D.class, parentIfaces, self,
 					alg.Body(alg.Method("foo", String.class, new Formal[0], new Closure() {
-						public Object apply(D self, Map<Class<?>, Object> parents) {
+						public Object apply(D self, B super$0, C super$1) {
 							return "I am D";
 						}
 					}), alg.Method("parentFoo", String.class, new Formal[0], new Closure() {
-						public Object apply(D self, Map<Class<?>, Object> parents) {
-							return ((B) parents.get(B.class)).foo();
+						public Object apply(D self, B super$0, C super$1) {
+							return super$0.foo();
 						}
 					})));
 			return current;

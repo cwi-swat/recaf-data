@@ -1,6 +1,5 @@
 package nl.cwi.md.semantics.oominheritance.impl;
 
-import nl.cwi.md.Cell;
 import nl.cwi.md.semantics.alg.Closure;
 import nl.cwi.md.semantics.oo.ast.Formal;
 import nl.cwi.md.semantics.oominheritance.alg.BaseMInheritance;
@@ -13,7 +12,7 @@ public class BaseMInheritanceImpl<T> implements BaseMInheritance<T, Body<T>, Mem
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public T Interface(Class<T> iface, Class<?>[] parentIfaces, Cell<? extends T> self, Body<T> body,
+	public T Interface(Class<T> iface, Class<?>[] parentIfaces, T self, Body<T> body,
 			Object... args) {
 		return new Interface<T>(iface, parentIfaces, self, body, args).getProxy();
 	}

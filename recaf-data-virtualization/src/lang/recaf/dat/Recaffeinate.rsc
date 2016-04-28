@@ -142,13 +142,10 @@ start[CompilationUnit] recaffeinate(start[CompilationUnit] cu) {
         => (InterfaceDec)`public interface <Id name> extends <{InterfaceType ","}+ parentTypes>{
         	'	<InterfaceMemberDec* newMds>
         	'	public static <Id name> New(Object... initArgs){
-        	'		nl.cwi.md.Cell\<<Id name>\> self = new nl.cwi.md.Cell\<<Id name>\>();
-			'		<Id name> proxy = <Id name>.New(self, initArgs);
-			'		self.setValue(proxy);
-			'		return proxy;
+        	'		return <Id name>.New(null, initArgs);
         	'	}
         	'
-        	'	public static <Id name> New(nl.cwi.md.Cell\<? extends <Id name>\> self, Object... initArgs){
+        	'	public static <Id name> New(<Id name> self, Object... initArgs){
         	'	<Id algType>\<<Id name>\> alg = new <Id algType>\<<Id name>\>();	
         	'	return <Expr returnExpr>;
         	'	}
@@ -161,13 +158,10 @@ start[CompilationUnit] recaffeinate(start[CompilationUnit] cu) {
         => (InterfaceDec)`public interface <Id name>{
         	'	<InterfaceMemberDec* newMds>
         	'	public static <Id name> New(Object... initArgs){
-        	'		nl.cwi.md.Cell\<<Id name>\> self = new nl.cwi.md.Cell\<<Id name>\>();
-			'		<Id name> proxy = <Id name>.New(self, initArgs);
-			'		self.setValue(proxy);
-			'		return proxy;
+			'		return <Id name>.New(null, initArgs);
         	'	}
         	'
-        	'	public static <Id name> New(nl.cwi.md.Cell\<? extends <Id name>\> self, Object... initArgs){
+        	'	public static <Id name> New(<Id name> self, Object... initArgs){
         	'	<Id algType>\<<Id name>\> alg = new <Id algType>\<<Id name>\>();	
         	'	return <Expr returnExpr>;
         	'	}

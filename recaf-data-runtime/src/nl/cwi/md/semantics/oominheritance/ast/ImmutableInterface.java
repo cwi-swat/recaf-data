@@ -6,7 +6,7 @@ import nl.cwi.md.Cell;
 
 public class ImmutableInterface<T> extends Interface<T> {
 	
-	public ImmutableInterface(Class<T> iface, Class<?>[] parentIfaces, Cell<? extends T> self, Body<T> body, Object[] initArgs) {
+	public ImmutableInterface(Class<T> iface, Class<?>[] parentIfaces, T self, Body<T> body, Object[] initArgs) {
 		super(iface, parentIfaces, self, body, initArgs);
 		Map<String, Object> store = null;
 		for (Member<T> m : body.getMembers()){
