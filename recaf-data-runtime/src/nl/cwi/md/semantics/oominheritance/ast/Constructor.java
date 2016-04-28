@@ -17,7 +17,7 @@ public class Constructor<T> implements Member<T>{
 	}
 
 	@Override
-	public Object handle(T self, Map<Class<?>, Object> parents, Object[] args){
+	public Object handle(T self, Object[] parents, Object[] args){
 		throw new RuntimeException();
 	}
 

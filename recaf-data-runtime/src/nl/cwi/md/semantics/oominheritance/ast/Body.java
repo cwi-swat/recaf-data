@@ -14,7 +14,7 @@ public class Body<T> {
 		this.members = members;
 	}
 	
-	public Object invoke(String name, T self, Map<Class<?>, Object> parents, Object[] args){
+	public Object invoke(String name, T self, Object[] parents, Object[] args){
 		for (Member<T>  m : members){
 			if (m.name().equals(name))
 				return m.handle(self, parents, args);

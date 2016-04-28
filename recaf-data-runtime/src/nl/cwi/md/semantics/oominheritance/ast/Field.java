@@ -1,7 +1,5 @@
 package nl.cwi.md.semantics.oominheritance.ast;
 
-import java.util.Map;
-
 import nl.cwi.md.semantics.oo.ast.Formal;
 
 public class Field<T> implements Member<T> {
@@ -27,7 +25,7 @@ public class Field<T> implements Member<T> {
 	}
 
 	@Override
-	public Object handle(T self, Map<Class<?>, Object> parents, Object[] args){
+	public Object handle(T self, Object[] parents, Object[] args){
 		// Why consider varargs and not varargs?
 		if (args.length == 0)
 			return getValue();
