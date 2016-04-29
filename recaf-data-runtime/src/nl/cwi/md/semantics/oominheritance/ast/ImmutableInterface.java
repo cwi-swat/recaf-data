@@ -2,12 +2,10 @@ package nl.cwi.md.semantics.oominheritance.ast;
 
 import java.util.Map;
 
-import nl.cwi.md.Cell;
-
 public class ImmutableInterface<T> extends Interface<T> {
 	
-	public ImmutableInterface(Class<T> iface, Class<?>[] parentIfaces, T self, Body<T> body, Object[] initArgs) {
-		super(iface, parentIfaces, self, body, initArgs);
+	public ImmutableInterface(Object algebra, Class<T> iface, Class<?>[] parentIfaces, T self, Body<T> body, Object[] initArgs) {
+		super(algebra, iface, parentIfaces, self, body, initArgs);
 		Map<String, Object> store = null;
 		for (Member<T> m : body.getMembers()){
 			if (m instanceof Constructor){

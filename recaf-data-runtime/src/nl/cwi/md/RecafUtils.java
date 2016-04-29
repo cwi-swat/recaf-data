@@ -5,15 +5,15 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 public class RecafUtils {
-	public static <T> Object[] reflectiveParentsNew(Class<?>[] ifaces, T self, Object... initArgs){
+	public static <T> Object[] reflectiveParentsNew(Object algebra, Class<?>[] ifaces, T self, Object... initArgs){
 		Object[] r =new Object[ifaces.length];
 		for (int i = 0; i < ifaces.length; i++) {
 			Method m = Arrays.asList(ifaces[i].getDeclaredMethods()).stream().filter(me -> {
-				return me.getName().equals("New") && me.getParameterTypes().length == 2;
+				return me.getName().equals("New") && me.getParameterTypes().length == 3;
 			}).findAny().get();
 			m.setAccessible(true);
 			try {
-				r[i] = m.invoke(null, new Object[] { self, initArgs });
+				r[i] = m.invoke(null, new Object[] { algebra, self, initArgs });
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

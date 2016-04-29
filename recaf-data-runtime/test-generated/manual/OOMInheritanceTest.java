@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import generated.D;
+import nl.cwi.md.semantics.oominheritance.impl.BaseMInheritanceImpl;
 
 public class OOMInheritanceTest {
 
@@ -56,7 +57,7 @@ public class OOMInheritanceTest {
 
 	@Test
 	public void test() {
-		D d = D.New();
+		D d = D.New(new BaseMInheritanceImpl<>());
 		System.out.println(d.foo());
 		System.out.println(d.parentFoo());
 		System.out.println(d.b());

@@ -9,7 +9,7 @@ import nl.cwi.md.semantics.oominheritance.ast.Member;
 public class FieldsImpl<T> extends BaseMInheritanceImpl<T> implements Fields<T, Body<T>, Member<T>, Formal> {
 
 	@Override
-	public Member<T> Field(String name, Class<?> type, Formal[] formals) {
+	public Member<T> Field(String name, Class<?> type, Formal... formals) {
 		return new Field<T>(new Formal(name, type));
 	}
 }

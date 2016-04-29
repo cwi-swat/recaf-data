@@ -13,7 +13,7 @@ public class Interface<T> implements InvocationHandler {
 	private T self;
 	private T proxy;
 
-	public Interface(Class<T> iface, Class<?>[] parentIfaces, T self, Body<T> body, Object[] initArgs) {
+	public Interface(Object algebra, Class<T> iface, Class<?>[] parentIfaces, T self, Body<T> body, Object[] initArgs) {
 		super();
 		this.body = body;
 		this.proxy = (T) Proxy.newProxyInstance(iface.getClassLoader(), new Class<?>[] { iface }, this);
@@ -21,7 +21,7 @@ public class Interface<T> implements InvocationHandler {
 			this.self = this.proxy;
 		else
 			this.self = self;
-		this.parents = RecafUtils.reflectiveParentsNew(parentIfaces, this.self, initArgs);
+		this.parents = RecafUtils.reflectiveParentsNew(algebra, parentIfaces, this.self, initArgs);
 	}
 	
 	@Override

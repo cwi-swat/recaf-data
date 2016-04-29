@@ -14,11 +14,11 @@ public class ImmutableFieldsImpl<T> extends FieldsImpl<T> implements ImmutableFi
 	@Override
 	public T Interface(Class<T> iface, Class<?>[] parentIfaces, T self, Body<T> body, Object... initArgs){
 		// BAD SMELL: Why we have to repeat the getProxy call?
-		return new ImmutableInterface<T>(iface, parentIfaces, self, body, initArgs).getProxy();
+		return new ImmutableInterface<T>(this, iface, parentIfaces, self, body, initArgs).getProxy();
 	};
 	
 	@Override
-	public Member<T> Field(String name, Class<?> retType, Formal[] formals) {
+	public Member<T> Field(String name, Class<?> retType, Formal...formals) {
 		return new ImmutableField<T>(new Formal(name, retType));
 	}
 

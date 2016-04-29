@@ -23,13 +23,13 @@ InterfaceMemberDec removeAnnos(InterfaceMemberDec dec) = {
  return dec;
 };
 
-Block selfize(Block b, map[TypeName, int] parents) =
-	visit(b){
+Block selfize(Block b, map[TypeName, int] parents) ={
+	return visit(b){
 		case (Expr) `this` => (Expr) `self`
 		case (Expr) `<TypeName ty>.super.<Id method>(<{Expr ","}* args>)` => (Expr) `<Id parent>.<Id method>(<{Expr ","}* args>)`
 			when int idx := parents[ty],
 				 Id parent := [Id] "super$<idx>"
-	};
+	}};
 
 map[TypeName, int] computeParentsMap(ArrayInit ai){
 	int i = 0;
@@ -62,20 +62,20 @@ map[TypeName, int] computeParentsMap(ArrayInit ai){
   	// cannot come here.
 }
 
-{Expr ","}* toFormals({FormalParam ","}* fps){
+{Expr ","}* toFormals(Id alg, {FormalParam ","}* fps){
 	Expr call = (Expr) `f()`; // ugly hack
 	visit (fps){
 		case (FormalParam) `<BeforeVar* _> <Type ty> <VarDecId id>`: {
 			if ((Expr) `f(<{Expr ","}* args>)` := call){
 				StringLiteral name = [StringLiteral] "\"<id>\"";
-				Expr e = (Expr) `new nl.cwi.md.semantics.oo.ast.Formal(<StringLiteral name>, <Type ty>.class)`;
+				Expr e = (Expr) `<Id alg>.Formal(<StringLiteral name>, <Type ty>.class, false)`;
 				call = (Expr)`f(<Expr e>, <{Expr ","}* args>)`;
 			}	
 		} 
 		case (FormalParam) `<BeforeVar* _> <Type ty> ... <VarDecId id>`: {
 			if ((Expr) `f(<{Expr ","}* args>)` := call){
 				StringLiteral name = [StringLiteral] "\"<id>\"";
-				Expr e = (Expr) `new nl.cwi.md.semantics.oo.ast.Formal(<StringLiteral name>, <Type ty>.class, true)`;
+				Expr e = (Expr) `<Id alg>.Formal(<StringLiteral name>, <Type ty>.class, true)`;
 				call = (Expr)`f(<Expr e>, <{Expr ","}* args>)`;
 			}	
 		} 
@@ -94,10 +94,10 @@ map[TypeName, int] computeParentsMap(ArrayInit ai){
   	case (AbstractMethodDec) `@<TypeName annoType> <BeforeAbstractMethod*  _> <TypeParams? tp> <Type rt> <Id methodName>(<{FormalParam ","}* fps>) <Throws? t>;`: { 
   		if ((Expr) `f(<{Expr ","}* args>)` := call){
   			StringLiteral m = [StringLiteral] "\"<methodName>\"";
-  			{Expr ","}* formals = toFormals(fps);
+  			{Expr ","}* formals = toFormals(alg, fps);
   			Expr e = (Expr) `<Id alg>.<Id annoType>(<StringLiteral m>, 
   							'						<Type rt>.class, 
-  							'						new nl.cwi.md.semantics.oo.ast.Formal[]{ <{Expr ","}* formals> })`;
+  							'						 <{Expr ","}* formals>)`;
     		call = (Expr)`f(<Expr e>, <{Expr ","}* args>)`;	
   		}
   	}
@@ -109,12 +109,12 @@ map[TypeName, int] computeParentsMap(ArrayInit ai){
   			Block newBlock = selfize(b, computeParentsMap(iTypes));
   			Expr e = (Expr) 
   				`<Id alg>.<Id annoType>(<StringLiteral m>, <Type rt>.class, 
-  				'	new nl.cwi.md.semantics.oo.ast.Formal[]{ <{Expr ","}* formals> },
   				'	 new nl.cwi.md.semantics.alg.Closure(){
   				'		public Object apply(<{FormalParam ","}* cloFps>){
   				'			<Block newBlock>
   				'		}
-  				'	})`;
+  				'	},
+  				'<{Expr ","}* formals>)`;
     		call = (Expr)`f(<Expr e>, <{Expr ","}* args>)`;	
   		}
   	}
@@ -136,37 +136,91 @@ Expr methods2alg(InterfaceMemberDec* mds, Id dataName, Id alg, ArrayInit iTypes 
   return call;
 }
 
+default ArrayInit toArrayInit(InterfaceDecHead head) = { 
+	println(head);
+	return (ArrayInit) `{}`;};
+
 start[CompilationUnit] recaffeinate(start[CompilationUnit] cu) {
    return top-down visit (cu) {
-      case (InterfaceDec)`@Managed(alg = <Id algType>.class) public interface <Id name> extends <{InterfaceType ","}+ parentTypes>{<InterfaceMemberDec* mds>}`
-        => (InterfaceDec)`public interface <Id name> extends <{InterfaceType ","}+ parentTypes>{
-        	'	<InterfaceMemberDec* newMds>
+   	  case (InterfaceDec)`@Managed(alg = <TypeName alg>.class) <BeforeInterface* bi> interface <Id name>{<InterfaceMemberDec* mds>}`
+        => (InterfaceDec) 
+            `<BeforeInterface* bi> interface <Id name>{
+			'	<InterfaceMemberDec* newMds>
+        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, Object... initArgs){
+        	'		return <Id name>.New(alg, null, initArgs);
+        	'	}
+        	'
+        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, <Id name> self, Object... initArgs){
+        	'	return <Expr returnExpr>;
+        	'	}
+        	'}` 
+        	when InterfaceMemberDec* newMds := removeAnnoss(mds),
+        		 ArrayInit iTypes := (ArrayInit) `{}`,
+        		 Expr returnExpr := methods2alg(mds, name, (Id) `alg`, iTypes)
+        		 
+        case (InterfaceDec)`@Managed(alg = <TypeName alg>.class, defaultImpl = <TypeName impl>.class) <BeforeInterface* bi> interface <Id name>{<InterfaceMemberDec* mds>}`
+        => (InterfaceDec) 
+            `<BeforeInterface* bi> interface <Id name>{
+			'	<InterfaceMemberDec* newMds>
         	'	public static <Id name> New(Object... initArgs){
-        	'		return <Id name>.New(null, initArgs);
+        	'		return <Id name>.New(new <TypeName impl>(), null, initArgs);
         	'	}
         	'
         	'	public static <Id name> New(<Id name> self, Object... initArgs){
-        	'	<Id algType>\<<Id name>\> alg = new <Id algType>\<<Id name>\>();	
+        	'		return <Id name>.New(new <TypeName impl>(), self, initArgs);
+        	'	}
+        	'
+        	'	public static <Id name> New(<TypeName alg>\<<Id name>\> alg, Object... initArgs){
+        	'		return <Id name>.New(alg, null, initArgs);
+        	'	}
+        	'
+        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, <Id name> self, Object... initArgs){
         	'	return <Expr returnExpr>;
         	'	}
-        	'}`
+        	'}` 
+        	when InterfaceMemberDec* newMds := removeAnnoss(mds),
+        		 ArrayInit iTypes := (ArrayInit) `{}`,
+        		 Expr returnExpr := methods2alg(mds, name, (Id) `alg`, iTypes)
+        		 
+        case (InterfaceDec)`@Managed(alg = <TypeName alg>.class) <BeforeInterface* bi> interface <Id name> extends <{InterfaceType ","}+ parentTypes>{<InterfaceMemberDec* mds>}`
+        => (InterfaceDec) 
+            `<BeforeInterface* bi> interface <Id name> extends <{InterfaceType ","}+ parentTypes>{
+			'	<InterfaceMemberDec* newMds>
+        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, Object... initArgs){
+        	'		return <Id name>.New(alg, null, initArgs);
+        	'	}
+        	'
+        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, <Id name> self, Object... initArgs){
+        	'	return <Expr returnExpr>;
+        	'	}
+        	'}` 
         	when InterfaceMemberDec* newMds := removeAnnoss(mds),
         		 ArrayInit iTypes :=  [ArrayInit] "{<intercalate(", ", [(Expr) `<Type ty>.class` | InterfaceType ty <- parentTypes])>}",
         		 Expr returnExpr := methods2alg(mds, name, (Id) `alg`, iTypes)
         		 
-        case (InterfaceDec)`@Managed(alg = <Id algType>.class) public interface <Id name>{<InterfaceMemberDec* mds>}`
-        => (InterfaceDec)`public interface <Id name>{
-        	'	<InterfaceMemberDec* newMds>
+        case (InterfaceDec)`@Managed(alg = <TypeName alg>.class, defaultImpl = <TypeName impl>.class) <BeforeInterface* bi> interface <Id name> extends <{InterfaceType ","}+ parentTypes>{<InterfaceMemberDec* mds>}`
+        => (InterfaceDec) 
+            `<BeforeInterface* bi> interface <Id name> extends <{InterfaceType ","}+ parentTypes>{
+			'	<InterfaceMemberDec* newMds>
         	'	public static <Id name> New(Object... initArgs){
-			'		return <Id name>.New(null, initArgs);
+        	'		return <Id name>.New(new <TypeName impl>(), null, initArgs);
         	'	}
         	'
         	'	public static <Id name> New(<Id name> self, Object... initArgs){
-        	'	<Id algType>\<<Id name>\> alg = new <Id algType>\<<Id name>\>();	
+        	'		return <Id name>.New(new <TypeName impl>(), self, initArgs);
+        	'	}
+        	'
+        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, Object... initArgs){
+        	'		return <Id name>.New(alg, null, initArgs);
+        	'	}
+        	'
+        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, <Id name> self, Object... initArgs){
         	'	return <Expr returnExpr>;
         	'	}
-        	'}`
+        	'}` 
         	when InterfaceMemberDec* newMds := removeAnnoss(mds),
-        		 Expr returnExpr := methods2alg(mds, name, (Id) `alg`, (ArrayInit) `{}`)
+        		 ArrayInit iTypes := [ArrayInit] "{<intercalate(", ", [(Expr) `<Type ty>.class` | InterfaceType ty <- parentTypes])>}",
+        		 Expr returnExpr := methods2alg(mds, name, (Id) `alg`, iTypes)
+        		 
     }
 }

@@ -2,7 +2,7 @@ package generated;
 
 import nl.cwi.md.semantics.oominheritance.impl.FieldsImpl;
 
-@Managed(alg = FieldsImpl.class)
+@Managed(alg = FieldsImpl.class, defaultImpl = FieldsImpl.class)
 public interface Point {
 	
 	@Field
