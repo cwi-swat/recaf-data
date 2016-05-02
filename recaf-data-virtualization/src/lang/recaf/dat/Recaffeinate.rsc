@@ -91,6 +91,8 @@ map[TypeName, int] computeParentsMap(ArrayInit ai){
 {Expr ","}* methods2sepExps(Id dataName, InterfaceMemberDec* mds, Id alg, ArrayInit iTypes) {
   Expr call = (Expr) `f()`; // ugly hack
   visit (mds) {
+    case (AbstractMethodDec) `@Algebra <BeforeAbstractMethod*  _> <TypeParams? tp> <Type rt> <Id methodName>(<{FormalParam ","}* fps>) <Throws? t>;`: {
+    };
   	case (AbstractMethodDec) `@<TypeName annoType> <BeforeAbstractMethod*  _> <TypeParams? tp> <Type rt> <Id methodName>(<{FormalParam ","}* fps>) <Throws? t>;`: { 
   		if ((Expr) `f(<{Expr ","}* args>)` := call){
   			StringLiteral m = [StringLiteral] "\"<methodName>\"";
