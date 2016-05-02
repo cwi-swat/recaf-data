@@ -9,7 +9,7 @@ import nl.cwi.md.annos.Managed;
 public interface A{
 	
 	@Algebra
-	static BaseMInheritanceAST algebra = new BaseMInheritanceAST();
+	static BaseMInheritanceAST algebra = new BaseMInheritanceImpl();
 	
 	@Method
 	default String foo() {

@@ -11,10 +11,14 @@ InterfaceMemberDec* removeAnnoss(InterfaceMemberDec* mds) =
 	top-down visit(mds){
 		case InterfaceMemberDec md => removeAnnos(md)
 	};
+
+InterfaceMemberDec removeAnnos((InterfaceMemberDec)`@Algebra <BeforeConstant* bcs> <Type algTy> <Id algebra> = <Expr e>;`)
+	 = (InterfaceMemberDec) `<BeforeConstant* bcs> <Type algTy> <Id algebra> = <Expr e>;`;
+
 	
 InterfaceMemberDec removeAnnos((InterfaceMemberDec) `@<TypeName annoType> <TypeParams? tp> <ResultType rt> <Id methodName>(<{FormalParam ","}* fps>) <Throws? t>;`)
-	{ return (InterfaceMemberDec) `<TypeParams? tp> <ResultType rt> <Id methodName> (<{FormalParam ","}* fps> ) <Throws? t>;`;
-	  }
+	 = (InterfaceMemberDec) `<TypeParams? tp> <ResultType rt> <Id methodName> (<{FormalParam ","}* fps> ) <Throws? t>;`;
+	  
 
 InterfaceMemberDec removeAnnos((InterfaceMemberDec) `@<TypeName annoType> <BeforeDefaultMethod*  _> default <TypeParams? tp> <ResultType rt> <Id methodName>(<{FormalParam ","}* fps>) <Throws? t> <MethodBody mb>`)
 	= (InterfaceMemberDec) `<TypeParams? tp> <ResultType rt> <Id methodName> (<{FormalParam ","}* fps> ) <Throws? t>;`;
