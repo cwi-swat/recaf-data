@@ -3,8 +3,10 @@ package generated;
 import nl.cwi.md.semantics.oominheritance.impl.ImmutableFieldsImpl;
 
 
-@Managed(alg = ImmutableFieldsImpl.class, defaultImpl = ImmutableFieldsImpl.class)
+@Managed
 public interface Lit {
+	@Algebra
+	ImmutableFieldsImpl algebra();
 	
 	@Field
 	Integer n(Integer... xs);

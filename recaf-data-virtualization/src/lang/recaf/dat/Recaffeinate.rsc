@@ -104,7 +104,7 @@ map[TypeName, int] computeParentsMap(ArrayInit ai){
   	case (DefaultMethodDec) `@<TypeName annoType> <BeforeDefaultMethod*  _> default <TypeParams? tp> <Type rt> <Id methodName>(<{FormalParam ","}* fps>) <Throws? t> <Block b>`: { 
   		if ((Expr) `f(<{Expr ","}* args>)` := call){
   			StringLiteral m = [StringLiteral] "\"<methodName>\"";
-  			{Expr ","}* formals = toFormals(fps);
+  			{Expr ","}* formals = toFormals(alg, fps);
   			{FormalParam ","}* cloFps = fromParentsToFormals(dataName, iTypes);
   			Block newBlock = selfize(b, computeParentsMap(iTypes));
   			Expr e = (Expr) 
@@ -139,88 +139,110 @@ Expr methods2alg(InterfaceMemberDec* mds, Id dataName, Id alg, ArrayInit iTypes 
 default ArrayInit toArrayInit(InterfaceDecHead head) = { 
 	println(head);
 	return (ArrayInit) `{}`;};
+	
+tuple[Type, bool, Expr] getAlgebraInfo(InterfaceMemberDec* mds){
+	top-down visit(mds){
+		case (InterfaceMemberDec)  `@Algebra <BeforeConstant* bcs> <Type algTy> <Id algebra> = <Expr e>;`:{
+		 	return <algTy, true, (Expr) `<Id algebra>`>;
+		}
+		
+		case (InterfaceMemberDec)  `@Algebra <BeforeAbstractMethod* bams> <Type algTy> <Id algebra>();`:{
+		 	return <algTy, false, (Expr) `null`>;
+		}
+	};
+	return <(Type) `Object`, false, (Expr) `null`>;
+}
+
 
 start[CompilationUnit] recaffeinate(start[CompilationUnit] cu) {
    return top-down visit (cu) {
-   	  case (InterfaceDec)`@Managed(alg = <TypeName alg>.class) <BeforeInterface* bi> interface <Id name>{<InterfaceMemberDec* mds>}`
-        => (InterfaceDec) 
-            `<BeforeInterface* bi> interface <Id name>{
-			'	<InterfaceMemberDec* newMds>
-        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, Object... initArgs){
-        	'		return <Id name>.New(alg, null, initArgs);
-        	'	}
-        	'
-        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, <Id name> self, Object... initArgs){
-        	'	return <Expr returnExpr>;
-        	'	}
-        	'}` 
-        	when InterfaceMemberDec* newMds := removeAnnoss(mds),
-        		 ArrayInit iTypes := (ArrayInit) `{}`,
-        		 Expr returnExpr := methods2alg(mds, name, (Id) `alg`, iTypes)
-        		 
-        case (InterfaceDec)`@Managed(alg = <TypeName alg>.class, defaultImpl = <TypeName impl>.class) <BeforeInterface* bi> interface <Id name>{<InterfaceMemberDec* mds>}`
-        => (InterfaceDec) 
+   	  case (InterfaceDec)`@Managed <BeforeInterface* bi> interface <Id name>{<InterfaceMemberDec* mds>}`
+        => algInfo.hasDefault
+        	?
+        	
+        	(InterfaceDec) 
             `<BeforeInterface* bi> interface <Id name>{
 			'	<InterfaceMemberDec* newMds>
         	'	public static <Id name> New(Object... initArgs){
-        	'		return <Id name>.New(new <TypeName impl>(), null, initArgs);
+        	'		return <Id name>.New(<Expr algField>, null, initArgs);
         	'	}
         	'
         	'	public static <Id name> New(<Id name> self, Object... initArgs){
-        	'		return <Id name>.New(new <TypeName impl>(), self, initArgs);
+        	'		return <Id name>.New(<Expr algField>, self, initArgs);
         	'	}
         	'
-        	'	public static <Id name> New(<TypeName alg>\<<Id name>\> alg, Object... initArgs){
+        	'	public static <Id name> New(<TypeName algType>\<<Id name>\> alg, Object... initArgs){
         	'		return <Id name>.New(alg, null, initArgs);
         	'	}
         	'
-        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, <Id name> self, Object... initArgs){
+        	'	public static  <Id name> New(<TypeName algType>\<<Id name>\> alg, <Id name> self, Object... initArgs){
         	'	return <Expr returnExpr>;
         	'	}
         	'}` 
+        	
+        	:
+        	
+        	(InterfaceDec) 
+            `<BeforeInterface* bi> interface <Id name>{
+			'	<InterfaceMemberDec* newMds>
+        	'	public static  <Id name> New(<TypeName algType>\<<Id name>\> alg, Object... initArgs){
+        	'		return <Id name>.New(alg, null, initArgs);
+        	'	}
+        	'
+        	'	public static  <Id name> New(<TypeName algType>\<<Id name>\> alg, <Id name> self, Object... initArgs){
+        	'	return <Expr returnExpr>;
+        	'	}
+        	'}`
         	when InterfaceMemberDec* newMds := removeAnnoss(mds),
         		 ArrayInit iTypes := (ArrayInit) `{}`,
+        		 tuple[Type ty, bool hasDefault, Expr algField] algInfo := getAlgebraInfo(mds),
+        		 Type algType := algInfo.ty,
+        		 Expr algField := algInfo.algField,
         		 Expr returnExpr := methods2alg(mds, name, (Id) `alg`, iTypes)
         		 
-        case (InterfaceDec)`@Managed(alg = <TypeName alg>.class) <BeforeInterface* bi> interface <Id name> extends <{InterfaceType ","}+ parentTypes>{<InterfaceMemberDec* mds>}`
-        => (InterfaceDec) 
+        case (InterfaceDec)`@Managed <BeforeInterface* bi> interface <Id name> extends <{InterfaceType ","}+ parentTypes> {<InterfaceMemberDec* mds>}`
+        => algInfo.hasDefault
+        	?
+        	
+        	(InterfaceDec) 
             `<BeforeInterface* bi> interface <Id name> extends <{InterfaceType ","}+ parentTypes>{
 			'	<InterfaceMemberDec* newMds>
-        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, Object... initArgs){
+        	'	public static <Id name> New(Object... initArgs){
+        	'		return <Id name>.New(<Expr algField>, null, initArgs);
+        	'	}
+        	'
+        	'	public static <Id name> New(<Id name> self, Object... initArgs){
+        	'		return <Id name>.New(<Expr algField>, self, initArgs);
+        	'	}
+        	'
+        	'	public static  <Id name> New(<TypeName algRType>\<<Id name>\> alg, Object... initArgs){
         	'		return <Id name>.New(alg, null, initArgs);
         	'	}
         	'
-        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, <Id name> self, Object... initArgs){
+        	'	public static  <Id name> New(<TypeName algType>\<<Id name>\> alg, <Id name> self, Object... initArgs){
         	'	return <Expr returnExpr>;
         	'	}
         	'}` 
+        	
+        	:
+        	
+        	(InterfaceDec) 
+            `<BeforeInterface* bi> interface <Id name> extends <{InterfaceType ","}+ parentTypes>{
+			'	<InterfaceMemberDec* newMds>
+        	'	public static  <Id name> New(<TypeName algType>\<<Id name>\> alg, Object... initArgs){
+        	'		return <Id name>.New(alg, null, initArgs);
+        	'	}
+        	'
+        	'	public static  <Id name> New(<TypeName algType>\<<Id name>\> alg, <Id name> self, Object... initArgs){
+        	'	return <Expr returnExpr>;
+        	'	}
+        	'}` 
+        	
         	when InterfaceMemberDec* newMds := removeAnnoss(mds),
         		 ArrayInit iTypes :=  [ArrayInit] "{<intercalate(", ", [(Expr) `<Type ty>.class` | InterfaceType ty <- parentTypes])>}",
+        		 tuple[Type ty, bool hasDefault, Expr algField] algInfo := getAlgebraInfo(mds),
+        		 Type algType := algInfo.ty,
+        		 Expr algField := algInfo.algField,
         		 Expr returnExpr := methods2alg(mds, name, (Id) `alg`, iTypes)
-        		 
-        case (InterfaceDec)`@Managed(alg = <TypeName alg>.class, defaultImpl = <TypeName impl>.class) <BeforeInterface* bi> interface <Id name> extends <{InterfaceType ","}+ parentTypes>{<InterfaceMemberDec* mds>}`
-        => (InterfaceDec) 
-            `<BeforeInterface* bi> interface <Id name> extends <{InterfaceType ","}+ parentTypes>{
-			'	<InterfaceMemberDec* newMds>
-        	'	public static <Id name> New(Object... initArgs){
-        	'		return <Id name>.New(new <TypeName impl>(), null, initArgs);
-        	'	}
-        	'
-        	'	public static <Id name> New(<Id name> self, Object... initArgs){
-        	'		return <Id name>.New(new <TypeName impl>(), self, initArgs);
-        	'	}
-        	'
-        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, Object... initArgs){
-        	'		return <Id name>.New(alg, null, initArgs);
-        	'	}
-        	'
-        	'	public static  <Id name> New(<TypeName alg>\<<Id name>\> alg, <Id name> self, Object... initArgs){
-        	'	return <Expr returnExpr>;
-        	'	}
-        	'}` 
-        	when InterfaceMemberDec* newMds := removeAnnoss(mds),
-        		 ArrayInit iTypes := [ArrayInit] "{<intercalate(", ", [(Expr) `<Type ty>.class` | InterfaceType ty <- parentTypes])>}",
-        		 Expr returnExpr := methods2alg(mds, name, (Id) `alg`, iTypes)
-        		 
     }
 }

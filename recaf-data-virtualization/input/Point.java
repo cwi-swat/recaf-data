@@ -2,8 +2,10 @@ package generated;
 
 import nl.cwi.md.semantics.oominheritance.impl.FieldsImpl;
 
-@Managed(alg = FieldsImpl.class, defaultImpl = FieldsImpl.class)
+@Managed
 public interface Point {
+	@Algebra
+	FieldsImpl algebra();
 	
 	@Field
 	Integer x(Integer... xs);
