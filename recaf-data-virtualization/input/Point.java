@@ -5,7 +5,7 @@ import nl.cwi.md.semantics.oominheritance.impl.FieldsImpl;
 @Managed
 public interface Point {
 	@Algebra
-	FieldsImpl algebra();
+	static FieldsImpl algebra = new FieldsImpl();
 	
 	@Field
 	Integer x(Integer... xs);

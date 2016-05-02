@@ -6,7 +6,7 @@ import nl.cwi.md.semantics.oominheritance.impl.ImmutableFieldsImpl;
 @Managed
 public interface Lit {
 	@Algebra
-	ImmutableFieldsImpl algebra();
+	static ImmutableFieldsImpl algebra = new ImmutableFieldsImpl();
 	
 	@Field
 	Integer n(Integer... xs);
