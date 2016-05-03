@@ -7,15 +7,15 @@ import nl.cwi.md.semantics.oominheritance.alg.ImmutableFieldsAST;
 import nl.cwi.md.semantics.oominheritance.ast.Body;
 import nl.cwi.md.semantics.oominheritance.ast.Constructor;
 import nl.cwi.md.semantics.oominheritance.ast.ImmutableField;
-import nl.cwi.md.semantics.oominheritance.ast.ImmutableInterface;
+import nl.cwi.md.semantics.oominheritance.ast.MSImmutableInterface;
 import nl.cwi.md.semantics.oominheritance.ast.Member;
 
 
-public class ImmutableFieldsImpl<T> extends FieldsImpl<T> implements ImmutableFieldsAST<T>, ImmutableFields<T, Body<T>, Member<T>, Formal>{
+public class MSImmutableFieldsImpl<T> extends FieldsImpl<T> implements ImmutableFieldsAST<T>, ImmutableFields<T, Body<T>, Member<T>, Formal>{
 	@Override
 	public T Interface(Class<T> iface, Class<?>[] parentIfaces, T self, Body<T> body, Object... initArgs){
 		// BAD SMELL: Why we have to repeat the getProxy call?
-		return new ImmutableInterface<T>(this, iface, parentIfaces, self, body, initArgs).getProxy();
+		return new MSImmutableInterface<T>(this, iface, parentIfaces, self, body, initArgs).getProxy();
 	};
 	
 	@Override

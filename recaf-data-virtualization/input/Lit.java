@@ -1,12 +1,13 @@
 package generated;
 
+import nl.cwi.md.semantics.oominheritance.alg.ImmutableFieldsAST;
 import nl.cwi.md.semantics.oominheritance.impl.ImmutableFieldsImpl;
 
 
 @Managed
 public interface Lit {
 	@Algebra
-	static ImmutableFieldsImpl algebra = new ImmutableFieldsImpl();
+	static ImmutableFieldsAST algebra = new ImmutableFieldsImpl();
 	
 	@Field
 	Integer n(Integer... xs);

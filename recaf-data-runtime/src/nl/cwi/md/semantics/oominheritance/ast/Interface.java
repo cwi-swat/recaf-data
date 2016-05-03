@@ -6,8 +6,9 @@ import java.lang.reflect.Proxy;
 import java.util.Arrays;
 
 import nl.cwi.md.RecafUtils;
+import nl.cwi.md.semantics.alg.ProxyProvider;
 
-public class Interface<T> implements InvocationHandler {
+public class Interface<T> implements InvocationHandler, ProxyProvider<T> {
 	private Body<T> body;
 	private Object[] parents;
 	private T self;
