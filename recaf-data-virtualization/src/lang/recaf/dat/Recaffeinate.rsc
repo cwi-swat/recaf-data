@@ -148,12 +148,11 @@ default ArrayInit toArrayInit(InterfaceDecHead head) = {
 	
 tuple[Type, bool, Expr] getAlgebraInfo(InterfaceMemberDec* mds){
 	top-down visit(mds){
+		case (InterfaceMemberDec)  `@Algebra <BeforeConstant* bcs> <Type algTy> <Id algebra> = null;`:{
+		 	return <algTy, false, (Expr) `null`>;
+		}
 		case (InterfaceMemberDec)  `@Algebra <BeforeConstant* bcs> <Type algTy> <Id algebra> = <Expr e>;`:{
 		 	return <algTy, true, (Expr) `<Id algebra>`>;
-		}
-		
-		case (InterfaceMemberDec)  `@Algebra <BeforeAbstractMethod* bams> <Type algTy> <Id algebra>();`:{
-		 	return <algTy, false, (Expr) `null`>;
 		}
 	};
 	return <(Type) `Object`, false, (Expr) `null`>;
@@ -221,7 +220,7 @@ start[CompilationUnit] recaffeinate(start[CompilationUnit] cu) {
         	'		return <Id name>.New(<Expr algField>, self, initArgs);
         	'	}
         	'
-        	'	public static  <Id name> New(<TypeName algRType>\<<Id name>\> alg, Object... initArgs){
+        	'	public static  <Id name> New(<TypeName algType>\<<Id name>\> alg, Object... initArgs){
         	'		return <Id name>.New(alg, null, initArgs);
         	'	}
         	'

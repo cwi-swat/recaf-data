@@ -7,7 +7,7 @@ import nl.cwi.md.annos.Managed;
 @Managed
 public interface B extends generated.A {
 	@Algebra
-	BaseMInheritanceAST algebra();
+	static BaseMInheritanceAST algebra = null;
 	
 	@Method
 	default String foo() {

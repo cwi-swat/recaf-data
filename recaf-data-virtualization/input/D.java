@@ -8,14 +8,14 @@ import nl.cwi.md.annos.Managed;
 @Managed
 public interface D extends generated.B, generated.C { 
 	@Algebra
-	BaseMInheritanceAST algebra();
+	static BaseMInheritanceAST algebra = null;
 	
 	@Method
 	default String foo() {
 		return "I am D";
 	}
 
-	@Method
+	@Method 
 	default String parentFoo() {
 		// TODO: B must be fully qualified
 		// return B.super.foo();
