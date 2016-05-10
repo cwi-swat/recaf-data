@@ -25,16 +25,7 @@ public class MSImmutableInterface<T> implements InvocationHandler, ProxyProvider
 			Object[] initArgs) {
 		super();
 
-		Formal[] formals = null;
-		for (Member<T> m : body.getMembers()) {
-			if (m instanceof Constructor) {
-				Constructor<T> c = (Constructor<T>) m;
-				if (initArgs.length == c.getFormals().length) {
-					formals = c.getFormals();
-				}
-			}
-		}
-		List<Object> key = computeKey(iface, formals, initArgs);
+		List<Object> key = computeKey(iface, initArgs);
 		if (msHeap.containsKey(key)) {
 			this.proxy = (T) msHeap.get(key);
 		} else {
@@ -68,7 +59,7 @@ public class MSImmutableInterface<T> implements InvocationHandler, ProxyProvider
 
 	}
 
-	private List<Object> computeKey(Class<T> iface, Formal[] formals, Object[] initArgs) {
+	private List<Object> computeKey(Class<T> iface, Object[] initArgs) {
 		List<Object> k = new ArrayList<>();
 		k.add(iface);
 		for (int i = 0; i < initArgs.length; i++) {

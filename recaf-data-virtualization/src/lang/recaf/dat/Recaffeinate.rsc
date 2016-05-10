@@ -47,7 +47,7 @@ map[TypeName, int] computeParentsMap(ArrayInit ai){
 	return m;
 }
 
-{FormalParam ","}* fromParentsToFormals(Id dataName, ArrayInit ai){
+{FormalParam ","}* fromParentsToFormals(Id dataName, ArrayInit ai, {FormalParam ","}* originalFps){
 	MethodDecHead mdec = (MethodDecHead) `void f(<TypeName dataName> self)`; // ugly hack
 	int i = 0;
 	visit (ai){
@@ -61,7 +61,10 @@ map[TypeName, int] computeParentsMap(ArrayInit ai){
 		} 
 	}
 	if ((MethodDecHead) `void f(<{FormalParam ","}* fps>)` := mdec) {
-    	return fps;
+    	mdec = (MethodDecHead) `void f(<{FormalParam ","}* fps>, <{FormalParam ","}* originalFps>)`;
+    	if ((MethodDecHead) `void f(<{FormalParam ","}* fps>)` := mdec) {
+    		return fps;
+    	}
   	}
   	// cannot come here.
 }
@@ -111,7 +114,7 @@ map[TypeName, int] computeParentsMap(ArrayInit ai){
   		if ((Expr) `f(<{Expr ","}* args>)` := call){
   			StringLiteral m = [StringLiteral] "\"<methodName>\"";
   			{Expr ","}* formals = toFormals(alg, fps);
-  			{FormalParam ","}* cloFps = fromParentsToFormals(dataName, iTypes);
+  			{FormalParam ","}* cloFps = fromParentsToFormals(dataName, iTypes, fps);
   			Block newBlock = selfize(b, computeParentsMap(iTypes));
   			Expr e = (Expr) 
   				`<Id alg>.<Id annoType>(<StringLiteral m>, <Type rt>.class, 
