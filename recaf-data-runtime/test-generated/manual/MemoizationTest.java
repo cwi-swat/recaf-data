@@ -7,7 +7,7 @@ import org.junit.Test;
 import generated.Fibonacci;
 import generated.Point;
 
-public class FibonacciTest {
+public class MemoizationTest {
 
 	@Test
 	public void test1() {
