@@ -7,7 +7,6 @@ import java.util.Map;
 import org.junit.Test;
 
 import nl.cwi.md.semantics.alg.Closure;
-import nl.cwi.md.semantics.oo.ast.Formal;
 import nl.cwi.md.semantics.oominheritance.impl.BaseMInheritanceImpl;
 
 public class OOMInheritanceTest {
@@ -29,19 +28,19 @@ public class OOMInheritanceTest {
 			Class<?>[] parentIfaces = new Class<?>[0];
 			Object[] parents = new Object[parentIfaces.length];
 			return alg.Interface(A.class, parentIfaces, self,
-					alg.Body(alg.Method("foo", String.class, new Closure() {
-				public Object apply(A self, Map<Class<?>, Object> parents) {
-					return "I am A";
-				}
-			}), alg.Method("bar", String.class, new Closure() {
-				public Object apply(A self) {
-					return "bar";
-				}
-			}), alg.Method("thisFoo", String.class, new Closure() {
-				public Object apply(A self) {
-					return self.foo();
-				}
-			})));
+					alg.Body(alg.Method(alg.Formal("foo", String.class), new Closure() {
+						public Object apply(A self, Map<Class<?>, Object> parents) {
+							return "I am A";
+						}
+					}), alg.Method(alg.Formal("bar", String.class), new Closure() {
+						public Object apply(A self) {
+							return "bar";
+						}
+					}), alg.Method(alg.Formal("thisFoo", String.class), new Closure() {
+						public Object apply(A self) {
+							return self.foo();
+						}
+					})));
 		}
 	}
 
@@ -58,15 +57,16 @@ public class OOMInheritanceTest {
 		static B New(B self, Object... initArgs) {
 			BaseMInheritanceImpl<B> alg = new BaseMInheritanceImpl<B>();
 			Class<?>[] parentIfaces = new Class<?>[] { A.class };
-			B current = alg.Interface(B.class, parentIfaces, self, alg.Body(alg.Method("foo", String.class, new Closure() {
-				public Object apply(B self, A super$0) {
-					return "I am B";
-				}
-			}), alg.Method("b", String.class, new Closure() {
-				public Object apply(B self, A super$0) {
-					return "b";
-				}
-			})));
+			B current = alg.Interface(B.class, parentIfaces, self,
+					alg.Body(alg.Method(alg.Formal("foo", String.class), new Closure() {
+						public Object apply(B self, A super$0) {
+							return "I am B";
+						}
+					}), alg.Method(alg.Formal("b", String.class), new Closure() {
+						public Object apply(B self, A super$0) {
+							return "b";
+						}
+					})));
 			return current;
 		}
 	}
@@ -84,15 +84,16 @@ public class OOMInheritanceTest {
 		static C New(C self, Object... initArgs) {
 			BaseMInheritanceImpl<C> alg = new BaseMInheritanceImpl<C>();
 			Class<?>[] parentIfaces = new Class<?>[] { A.class };
-			C current = alg.Interface(C.class, parentIfaces, self, alg.Body(alg.Method("foo", String.class, new Closure() {
-				public Object apply(C self, A super$0) {
-					return "I am C";
-				}
-			}), alg.Method("c", String.class, new Closure() {
-				public Object apply(C self, A super$0) {
-					return "c";
-				}
-			})));
+			C current = alg.Interface(C.class, parentIfaces, self,
+					alg.Body(alg.Method(alg.Formal("foo", String.class), new Closure() {
+						public Object apply(C self, A super$0) {
+							return "I am C";
+						}
+					}), alg.Method(alg.Formal("c", String.class), new Closure() {
+						public Object apply(C self, A super$0) {
+							return "c";
+						}
+					})));
 			return current;
 		}
 	}
@@ -111,11 +112,11 @@ public class OOMInheritanceTest {
 			BaseMInheritanceImpl<D> alg = new BaseMInheritanceImpl<D>();
 			Class<?>[] parentIfaces = new Class<?>[] { B.class, C.class };
 			D current = alg.Interface(D.class, parentIfaces, self,
-					alg.Body(alg.Method("foo", String.class, new Closure() {
+					alg.Body(alg.Method(alg.Formal("foo", String.class), new Closure() {
 						public Object apply(D self, B super$0, C super$1) {
 							return "I am D";
 						}
-					}), alg.Method("parentFoo", String.class, new Closure() {
+					}), alg.Method(alg.Formal("parentFoo", String.class), new Closure() {
 						public Object apply(D self, B super$0, C super$1) {
 							return super$0.foo();
 						}

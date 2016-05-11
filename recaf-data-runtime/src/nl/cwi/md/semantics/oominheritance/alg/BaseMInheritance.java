@@ -9,4 +9,5 @@ public interface BaseMInheritance<T, B, M, F> {
 	M Method(F head, Closure body, F... formals); // Field
 	F Formal(String name, Class<?> type, boolean isVarArg, Class<?> typeArg); // Key
 	F Formal(String name, Class<?> type, boolean isVararg);
+	F Formal(String name, Class<?> type);
 }

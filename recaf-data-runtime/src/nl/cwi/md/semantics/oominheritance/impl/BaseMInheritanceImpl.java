@@ -38,4 +38,9 @@ public class BaseMInheritanceImpl<T> implements BaseMInheritanceAST<T>, BaseMInh
 		return new Formal(name, type, isVararg, typeArg);
 	}
 
+	@Override
+	public nl.cwi.md.semantics.oo.ast.Formal Formal(String name, Class<?> type) {
+		return new Formal(name, type, false);
+	}
+
 }
