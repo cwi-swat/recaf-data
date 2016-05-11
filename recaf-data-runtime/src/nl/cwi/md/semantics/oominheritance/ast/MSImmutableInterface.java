@@ -39,20 +39,23 @@ public class MSImmutableInterface<T> implements InvocationHandler, ProxyProvider
 				}
 			}
 
-			for (Member<T> m : body.getMembers()) {
-				if (m instanceof ImmutableField) {
-					ImmutableField<T> f = (ImmutableField<T>) m;
-					// let field decide itself to get the value from the map
-					// no need to have the indirection via positions.
-					f.setInitialValue(store);
-				}
-			}
+			
 			this.body = body;
 			this.proxy = (T) Proxy.newProxyInstance(iface.getClassLoader(), new Class<?>[] { iface }, this);
 			if (self == null)
 				this.self = this.proxy;
 			else
 				this.self = self;
+			
+			for (Member<T> m : body.getMembers()) {
+				if (m instanceof ImmutableField) {
+					ImmutableField<T> f = (ImmutableField<T>) m;
+					// let field decide itself to get the value from the map
+					// no need to have the indirection via positions.
+					f.setInitialValue(this.self, store);
+				}
+			}
+			
 			this.parents = RecafUtils.reflectiveParentsNew(algebra, parentIfaces, this.self, initArgs);
 			msHeap.put(key, this.proxy);
 		}

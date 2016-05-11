@@ -12,7 +12,7 @@ public class Field<T> implements Member<T> {
 		this.formal = formal;
 	}
 
-	protected void setValue(Object v) {
+	protected void setValue(T self, Object v) {
 		this.value = v;
 	}
 
@@ -35,7 +35,7 @@ public class Field<T> implements Member<T> {
 				return getValue();
 			else if (varargs.length == 1) {
 				// if (type.isInstance(varargs[0])) {
-				setValue(varargs[0]);
+				setValue(self, varargs[0]);
 				return varargs[0];
 
 			} else // varargs cannot be greater than 1

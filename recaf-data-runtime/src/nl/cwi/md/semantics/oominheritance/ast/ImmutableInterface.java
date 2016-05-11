@@ -20,7 +20,7 @@ public class ImmutableInterface<T> extends Interface<T> {
 				ImmutableField<T> f = (ImmutableField<T>) m;
 				// let field decide itself to get the value from the map
 				// no need to have the indirection via positions.
-				f.setInitialValue(store);
+				f.setInitialValue(this.getProxy(), store);
 			}
 		}
 		

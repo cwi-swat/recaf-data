@@ -10,12 +10,12 @@ public class ImmutableField<T> extends Field<T> {
 		super(formal);
 	}
 	
-	public void setInitialValue(Map<String,Object> map){
-		super.setValue(map.get(getFormal().getName()));
+	public void setInitialValue(T self, Map<String,Object> map){
+		super.setValue(self, map.get(getFormal().getName()));
 	}
 	
 	@Override
-	protected void setValue(Object v) {
+	protected void setValue(T self, Object v) {
 		throw new IllegalStateException("Immutable field cannot be overwritten.");
 	}
 	
