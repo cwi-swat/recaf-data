@@ -12,8 +12,8 @@ public class MemoizedMethod<T> extends MMethod<T> {
 
 	public static Map<List<Object>, Object> memoTable = new HashMap<>();
 
-	public MemoizedMethod(String name, Formal[] formals, Closure body) {
-		super(name, formals, body);
+	public MemoizedMethod(Formal head, Formal[] formals, Closure body) {
+		super(head, formals, body);
 	}
 
 	private List<Object> computeKey(Class<?> iface, Object[] initArgs) {

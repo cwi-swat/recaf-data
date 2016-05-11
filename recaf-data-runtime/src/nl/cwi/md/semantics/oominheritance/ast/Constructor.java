@@ -7,12 +7,12 @@ import nl.cwi.md.semantics.oo.ast.Formal;
 
 public class Constructor<T> implements Member<T>{
 
-	private String name;
+	private Formal head;
 	private Formal[] formals;
 	
-	public Constructor(String name, Formal[] formals) {
+	public Constructor(Formal head, Formal[] formals) {
 		super();
-		this.name = name;
+		this.head = head;
 		this.formals = formals;
 	}
 
@@ -34,7 +34,7 @@ public class Constructor<T> implements Member<T>{
 	}
 
 	public String name() {
-		return name;
+		return head.getName();
 	}
 
 }

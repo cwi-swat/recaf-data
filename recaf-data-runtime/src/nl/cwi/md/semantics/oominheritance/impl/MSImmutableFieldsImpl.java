@@ -19,12 +19,12 @@ public class MSImmutableFieldsImpl<T> extends FieldsImpl<T> implements Immutable
 	};
 	
 	@Override
-	public Member<T> Field(String name, Class<?> retType, Formal...formals) {
-		return new ImmutableField<T>(new Formal(name, retType));
+	public Member<T> Field(Formal head, Formal...formals) {
+		return new ImmutableField<T>(head);
 	}
 
 	@Override
-	public Member<T> Constructor(String name, Class<?> retType, Formal... formals) {
-		return new Constructor<T>(name, formals);
+	public Member<T> Constructor(Formal head, Formal... formals) {
+		return new Constructor<T>(head, formals);
 	}
 }

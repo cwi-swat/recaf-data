@@ -10,8 +10,8 @@ import nl.cwi.md.semantics.oominheritance.ast.Member;
 
 public class LogMInheritanceImpl<T> extends BaseMInheritanceImpl<T> implements BaseMInheritanceAST<T>, BaseMInheritance<T, Body<T>, Member<T>, Formal> {
 	@Override
-	public Member<T> Method(String name, Class<?> retType, Closure body, Formal... formals) {
-		return new LogMethod<>(name, formals, body);
+	public Member<T> Method(Formal head, Closure body, Formal... formals) {
+		return new LogMethod<>(head, formals, body);
 	}
 
 }

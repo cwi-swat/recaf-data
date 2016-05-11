@@ -10,8 +10,8 @@ import nl.cwi.md.semantics.oominheritance.ast.MemoizedMethod;
 public class MemoizedImpl<T> extends BaseMInheritanceImpl<T> implements Memoized<T, Body<T>, Member<T>, Formal> {
 
 	@Override
-	public Member<T> MemoizedMethod(String name, Class<?> retType, Closure body,
+	public Member<T> MemoizedMethod(Formal head, Closure body,
 			nl.cwi.md.semantics.oo.ast.Formal... formals) {
-		return new MemoizedMethod<>(name, formals, body);
+		return new MemoizedMethod<>(head, formals, body);
 	}
 }

@@ -69,23 +69,34 @@ map[TypeName, int] computeParentsMap(ArrayInit ai){
   	// cannot come here.
 }
 
+
+Expr toFormal(Id alg, FormalParam p){
+	switch (p){
+		case (FormalParam) `<BeforeVar* _> <TypeName ty>\<<Type tyArg>\> <VarDecId id>`: {
+			StringLiteral name = [StringLiteral] "\"<id>\"";
+			return (Expr) `<Id alg>.Formal(<StringLiteral name>, <Type ty>.class, false, <Type tyArg>.class)`;	
+		} 
+		case (FormalParam) `<BeforeVar* _> <Type ty> <VarDecId id>`: {
+			StringLiteral name = [StringLiteral] "\"<id>\"";
+			return (Expr) `<Id alg>.Formal(<StringLiteral name>, <Type ty>.class, false)`;	
+		} 
+		case (FormalParam) `<BeforeVar* _> <Type ty> ... <VarDecId id>`: {
+			StringLiteral name = [StringLiteral] "\"<id>\"";
+			return (Expr) `<Id alg>.Formal(<StringLiteral name>, <Type ty>.class, true)`;
+		} 
+	}
+}
+
 {Expr ","}* toFormals(Id alg, {FormalParam ","}* fps){
 	Expr call = (Expr) `f()`; // ugly hack
 	visit (fps){
-		case (FormalParam) `<BeforeVar* _> <Type ty> <VarDecId id>`: {
+		case FormalParam fp: {
 			if ((Expr) `f(<{Expr ","}* args>)` := call){
-				StringLiteral name = [StringLiteral] "\"<id>\"";
-				Expr e = (Expr) `<Id alg>.Formal(<StringLiteral name>, <Type ty>.class, false)`;
+				Expr e = toFormal(alg, fp);
 				call = (Expr)`f(<Expr e>, <{Expr ","}* args>)`;
 			}	
 		} 
-		case (FormalParam) `<BeforeVar* _> <Type ty> ... <VarDecId id>`: {
-			if ((Expr) `f(<{Expr ","}* args>)` := call){
-				StringLiteral name = [StringLiteral] "\"<id>\"";
-				Expr e = (Expr) `<Id alg>.Formal(<StringLiteral name>, <Type ty>.class, true)`;
-				call = (Expr)`f(<Expr e>, <{Expr ","}* args>)`;
-			}	
-		} 
+		
 	}
 	if ((Expr) `f(<{Expr ","}* args>)` := call) {
     	return args;
@@ -102,22 +113,21 @@ map[TypeName, int] computeParentsMap(ArrayInit ai){
     };
   	case (AbstractMethodDec) `@<TypeName annoType> <BeforeAbstractMethod*  _> <TypeParams? tp> <Type rt> <Id methodName>(<{FormalParam ","}* fps>) <Throws? t>;`: { 
   		if ((Expr) `f(<{Expr ","}* args>)` := call){
-  			StringLiteral m = [StringLiteral] "\"<methodName>\"";
+  			Expr firstFormal = toFormal(alg, (FormalParam) `<Type rt> <Id methodName>`);
   			{Expr ","}* formals = toFormals(alg, fps);
-  			Expr e = (Expr) `<Id alg>.<Id annoType>(<StringLiteral m>, 
-  							'						<Type rt>.class, 
-  							'						 <{Expr ","}* formals>)`;
+  			Expr e = (Expr) `<Id alg>.<Id annoType>(<Expr firstFormal>, 
+  							'						<{Expr ","}* formals>)`;
     		call = (Expr)`f(<Expr e>, <{Expr ","}* args>)`;	
   		}
   	}
   	case (DefaultMethodDec) `@<TypeName annoType> <BeforeDefaultMethod*  _> default <TypeParams? tp> <Type rt> <Id methodName>(<{FormalParam ","}* fps>) <Throws? t> <Block b>`: { 
   		if ((Expr) `f(<{Expr ","}* args>)` := call){
-  			StringLiteral m = [StringLiteral] "\"<methodName>\"";
+  			Expr firstFormal = toFormal(alg, (FormalParam) `<Type rt> <Id methodName>`);
   			{Expr ","}* formals = toFormals(alg, fps);
   			{FormalParam ","}* cloFps = fromParentsToFormals(dataName, iTypes, fps);
   			Block newBlock = selfize(b, computeParentsMap(iTypes));
   			Expr e = (Expr) 
-  				`<Id alg>.<Id annoType>(<StringLiteral m>, <Type rt>.class, 
+  				`<Id alg>.<Id annoType>(<Expr firstFormal>, 
   				'	 new nl.cwi.md.semantics.alg.Closure(){
   				'		public Object apply(<{FormalParam ","}* cloFps>){
   				'			<Block newBlock>

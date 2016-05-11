@@ -7,8 +7,18 @@ import nl.cwi.md.semantics.oominheritance.ast.Member;
 
 @SuppressWarnings("unchecked")
 public interface BaseMInheritanceAST<T> extends BaseMInheritance<T, Body<T>, Member<T>, Formal>{
+	@Override
 	T Interface(Class<T> iface, Class<?>[] parentIfaces, T self, Body<T> body, Object... args);
+	
+	@Override
 	Body<T> Body(Member<T>...members);
-	Member<T> Method(String name, Class<?> retType, Closure body, Formal... formals); // Field
-	Formal Formal(String name, Class<?> type, boolean isVararg); // Key
+	
+	@Override
+	Member<T> Method(Formal head, Closure body, Formal... formals); // Field
+	
+	@Override
+	Formal Formal(String name, Class<?> type, boolean isVararg, Class<?> typeArg); // Key
+	
+	@Override
+	Formal Formal(String name, Class<?> type, boolean isVararg); 
 }

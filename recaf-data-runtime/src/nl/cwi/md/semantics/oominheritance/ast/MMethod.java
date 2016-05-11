@@ -9,13 +9,13 @@ import nl.cwi.md.semantics.oo.ast.Formal;
 
 public class MMethod<T> implements Member<T> {
 
-	private String name;
+	private Formal head;
 	private Formal[] formals;
 	private Closure body;
 
-	public MMethod(String name, Formal[] formals, Closure body) {
+	public MMethod(Formal head, Formal[] formals, Closure body) {
 		super();
-		this.name = name;
+		this.head = head;
 		this.formals = formals;
 		this.body = body;
 	}
@@ -43,7 +43,7 @@ public class MMethod<T> implements Member<T> {
 
 	@Override
 	public String name() {
-		return name;
+		return head.getName();
 	}
 
 }

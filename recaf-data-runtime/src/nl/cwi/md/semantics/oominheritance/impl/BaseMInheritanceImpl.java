@@ -24,13 +24,18 @@ public class BaseMInheritanceImpl<T> implements BaseMInheritanceAST<T>, BaseMInh
 	}
 
 	@Override
-	public Member<T> Method(String name, Class<?> retType, Closure body, Formal... formals) {
-		return new MMethod<>(name, formals, body);
+	public Member<T> Method(Formal head, Closure body, Formal... formals) {
+		return new MMethod<>(head, formals, body);
 	}
 
 	@Override
 	public nl.cwi.md.semantics.oo.ast.Formal Formal(String name, Class<?> type, boolean isVararg) {
 		return new Formal(name, type, isVararg);
+	}
+
+	@Override
+	public nl.cwi.md.semantics.oo.ast.Formal Formal(String name, Class<?> type, boolean isVararg, Class<?> typeArg) {
+		return new Formal(name, type, isVararg, typeArg);
 	}
 
 }

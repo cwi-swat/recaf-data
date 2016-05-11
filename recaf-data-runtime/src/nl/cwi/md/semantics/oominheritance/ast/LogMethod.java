@@ -7,8 +7,8 @@ import nl.cwi.md.semantics.oo.ast.Formal;
 
 public class LogMethod<T> extends MMethod<T> {
 
-	public LogMethod(String name, Formal[] formals, Closure body) {
-		super(name, formals, body);
+	public LogMethod(Formal head, Formal[] formals, Closure body) {
+		super(head, formals, body);
 	}
 
 	@Override

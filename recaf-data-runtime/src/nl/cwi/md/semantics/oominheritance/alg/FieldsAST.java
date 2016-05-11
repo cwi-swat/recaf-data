@@ -5,5 +5,5 @@ import nl.cwi.md.semantics.oominheritance.ast.Body;
 import nl.cwi.md.semantics.oominheritance.ast.Member;
 
 public interface FieldsAST<T> extends BaseMInheritanceAST<T>, Fields<T, Body<T>, Member<T>, Formal> {
-	Member<T> Field(String name, Class<?> retType, Formal... formals);
+	Member<T> Field(Formal head, Formal... formals);
 }

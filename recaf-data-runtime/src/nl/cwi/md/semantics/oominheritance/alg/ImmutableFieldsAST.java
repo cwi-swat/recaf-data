@@ -6,5 +6,6 @@ import nl.cwi.md.semantics.oominheritance.ast.Member;
 
 @SuppressWarnings("unchecked")
 public interface ImmutableFieldsAST<T> extends FieldsAST<T>, ImmutableFields<T, Body<T>, Member<T>, Formal> {
-	Member<T> Constructor(String name, Class<?> retType, Formal... formals);
+	@Override
+	Member<T> Constructor(Formal head, Formal... formals);
 }
