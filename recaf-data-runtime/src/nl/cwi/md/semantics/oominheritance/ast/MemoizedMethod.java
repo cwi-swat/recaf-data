@@ -10,15 +10,14 @@ import nl.cwi.md.semantics.oo.ast.Formal;
 
 public class MemoizedMethod<T> extends MMethod<T> {
 
-	public static Map<List<Object>, Object> memoTable = new HashMap<>();
+	private Map<List<Object>, Object> memoTable = new HashMap<>();
 
 	public MemoizedMethod(Formal head, Formal[] formals, Closure body) {
 		super(head, formals, body);
 	}
 
-	private List<Object> computeKey(Class<?> iface, Object[] initArgs) {
+	private List<Object> computeKey(Object[] initArgs) {
 		List<Object> k = new ArrayList<>();
-		k.add(iface);
 		k.add(name());
 		for (int i = 0; i < initArgs.length; i++) {
 			k.add(initArgs[i]);
@@ -28,7 +27,7 @@ public class MemoizedMethod<T> extends MMethod<T> {
 
 	@Override
 	public Object handle(T self, Object[] parents, Object[] args) {
-		List<Object> key = computeKey(self.getClass(), args);
+		List<Object> key = computeKey(args);
 		if (!memoTable.containsKey(key)) {
 			memoTable.put(key, super.handle(self, parents, args));
 		}
