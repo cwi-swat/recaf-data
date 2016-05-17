@@ -1,6 +1,6 @@
 package manual;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,7 @@ public class BidirectionalTest {
 		course.students(new ArrayList<>());
 		course.students().add(s1);
 		assertEquals(Integer.valueOf(1990), course.students().iterator().next().birthYear());
-		assertEquals(course.name(), course.students().iterator().next().course().name());
+		assertTrue(course == s1.course());
 	}
 
 }

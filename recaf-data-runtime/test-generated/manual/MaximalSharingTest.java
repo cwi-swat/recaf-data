@@ -1,6 +1,7 @@
 package manual;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class MaximalSharingTest {
 		System.out.println(l2.n());
 		assertEquals(Integer.valueOf(2), l1.n());
 		assertEquals(Integer.valueOf(2), l2.n());
-		//System.out.println(l2.equals(l1));
+		assertTrue(l1 == l2);
 
 	}
 
