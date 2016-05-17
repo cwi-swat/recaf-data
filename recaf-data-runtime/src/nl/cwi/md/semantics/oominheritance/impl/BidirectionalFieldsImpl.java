@@ -9,7 +9,7 @@ import nl.cwi.md.semantics.oominheritance.ast.Member;
 public class BidirectionalFieldsImpl<T> extends FieldsImpl<T> implements BidirectionalFields<T, Body<T>, Member<T>, Formal> {
 	
 	@Override
-	public Member<T> Container(Formal head, Formal... formals) {
-		return new Container<T>(head);
+	public Member<T> Container(String inverseField, Formal head, Formal... formals) {
+		return new Container<T>(inverseField, head, this);
 	}
 }

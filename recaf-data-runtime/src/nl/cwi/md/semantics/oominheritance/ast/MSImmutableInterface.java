@@ -52,7 +52,7 @@ public class MSImmutableInterface<T> implements InvocationHandler, ProxyProvider
 					ImmutableField<T> f = (ImmutableField<T>) m;
 					// let field decide itself to get the value from the map
 					// no need to have the indirection via positions.
-					f.setInitialValue(this.self, store);
+					f.setInitialValue(store);
 				}
 			}
 			
